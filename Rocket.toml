@@ -29,4 +29,4 @@ project_url   = "http://localhost:8051/api/v1/project/"
 cron_url      = "http://localhost:8052/api/v1/cron/"
 
 [default.databases.questions]
-url = "postgres://base:base@localhost/base"
+url = "postgres://messages:messages@localhost/messages"
