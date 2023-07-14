@@ -4,7 +4,7 @@ diesel::table! {
     messages (id) {
         id -> Int4,
         title -> Varchar,
-        body -> Varchar,
+        body -> Nullable<Varchar>,
         message_type -> Varchar,
         content -> Array<Nullable<Text>>,
         data -> Jsonb,
