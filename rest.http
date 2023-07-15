@@ -31,11 +31,80 @@ GET http://localhost:8000/health
 GET http://localhost:8003/auth/bypass/1
 Accept: application/json
 
-# {{{ example
+# {{{ message
 
-GET http://localhost:8000/api/v1/example/
+GET http://localhost:8000/api/v1/messaging/message/
 Accept: application/json
-Authorization: Bearer <token>
+Authorization: Bearer 
 Content-type: application/json
+
+GET http://localhost:8000/api/v1/messaging/message/1
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+POST http://localhost:8000/api/v1/messaging/message/
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+{
+  "title": "Título push",
+  "body": "Body push",
+  "message_type": "success",
+  "content": ["1", "2", "3"],
+  "data": { "path": "/home" }
+}
+
+PUT http://localhost:8000/api/v1/messaging/message/5
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+{
+  "title": "Título push",
+  "body": "Body push",
+  "message_type": "warning",
+  "content": ["Importante", "❗ ❗ ❗"],
+  "data": { "path": "/home" }
+}
+
+# }}}
+
+# {{{ tokens
+
+GET http://localhost:8000/api/v1/messaging/token/
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+GET http://localhost:8000/api/v1/messaging/token/1
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+POST http://localhost:8000/api/v1/messaging/token/
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+{
+  "user_id": 3,
+  "web_token": { "endpoint": "asldkjflksdjf", "expiration": null }
+} 
+
+PUT http://localhost:8000/api/v1/messaging/token/5
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+{
+  "user_id": 3,
+  "web_token": { "endpoint": "https://ningunsitio.es", "expiration": null }
+}
+
+# }}}
+
+# {{{ dispatcher
 
 # }}}
