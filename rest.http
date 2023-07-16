@@ -92,19 +92,51 @@ Content-type: application/json
   "user_id": 3,
   "web_token": { "endpoint": "asldkjflksdjf", "expiration": null }
 } 
+}
 
-PUT http://localhost:8000/api/v1/messaging/token/5
+PUT http://localhost:8000/api/v1/messaging/token/1
 Accept: application/json
 Authorization: Bearer 
 Content-type: application/json
 
 {
-  "user_id": 3,
-  "web_token": { "endpoint": "https://ningunsitio.es", "expiration": null }
+  "user_id": 1,
+  "fcm_token": "",
+  "web_token": {
+    "endpoint": "",
+    "expirationTime": null,
+    "keys": {
+      "p256dh": "",
+      "auth": ""
+    }
+  }
+}
+
+PUT http://localhost:8000/api/v1/messaging/token/1
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+{
+  "user_id": 1,
+  "fcm_token": null,
+  "web_token": {
+    "endpoint": "",
+    "expirationTime": null,
+    "keys": {
+      "auth": "",
+      "p256dh": ""
+    }
+  }
 }
 
 # }}}
 
 # {{{ dispatcher
+
+GET http://localhost:8000/api/v1/messaging/dispatcher/1/user/1
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
 
 # }}}
