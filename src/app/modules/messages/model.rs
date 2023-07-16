@@ -35,3 +35,15 @@ impl From<Message> for NewMessage {
         }
     }
 }
+
+impl From<NewMessage> for rocket::serde::json::Value {
+    fn from(message: NewMessage) -> Self {
+        rocket::serde::json::json!({
+            "title": message.title,
+            "body": message.body,
+            // "message_type": message.message_type,
+            // "content": message.content,
+            // "data": message.data,
+        })
+    }
+}
