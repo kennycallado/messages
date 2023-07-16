@@ -8,6 +8,8 @@ port       = 8000
 origin_url = "http://localhost:8000"
 # secret_key = ""
 
+# fcm_api_key= ""
+
 profile_url   = "http://localhost:8001/api/v1/profile/"
 user_url      = "http://localhost:8002/api/v1/user/"
 auth_url      = "http://localhost:8003/auth/"
