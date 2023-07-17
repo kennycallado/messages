@@ -39,11 +39,15 @@ impl From<Message> for NewMessage {
 impl From<NewMessage> for rocket::serde::json::Value {
     fn from(message: NewMessage) -> Self {
         rocket::serde::json::json!({
-            "title": message.title,
-            "body": message.body,
-            // "message_type": message.message_type,
-            // "content": message.content,
-            // "data": message.data,
+            "notification": {
+                "title": message.title,
+                "body": message.body,
+                "vibrate": [100, 50, 100],
+                "data": rocket::serde::json::json!({
+                    "type": message.message_type,
+                    "content": message.content,
+                }),
+            }
         })
     }
 }
