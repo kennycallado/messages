@@ -1,4 +1,5 @@
-FROM busybox:latest
+# FROM busybox:latest
+FROM alpine:latest
 
 # --build-arg PACKAGE_NAME=${package_name}
 ARG PACKAGE_NAME="q-api-messages"
