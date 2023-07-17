@@ -41,8 +41,8 @@ pub async fn send_message_id(db: &Db, _user: UserInClaims, user_id: i32, message
     };
 
     match (&token.fcm_token, &token.web_token) {
-        (None, Some(token)) => to_web_push(token.into(), message.into()).await?,
-        (Some(token), None) => to_fcm(token, message.into()).await?,
+        (None, Some(token)) => to_web_push(token.into(), message.into()).await,
+        (Some(token), None) => to_fcm(token, message.into()).await,
         (Some(_), Some(_)) => {
             // TODO: send to both ??
             println!("Error: sender; There is both fcm and web token for user {}", user_id);
@@ -53,11 +53,6 @@ pub async fn send_message_id(db: &Db, _user: UserInClaims, user_id: i32, message
             return Err(Status::InternalServerError);
         }
     }
-
-    // event source
-    //
-    // return status
-    Ok(Status::Ok)
 }
 
 pub async fn send_message(db: &Db, _user: UserInClaims, user_id: i32, message: NewMessage)
@@ -71,7 +66,7 @@ pub async fn send_message(db: &Db, _user: UserInClaims, user_id: i32, message: N
 }
 
 async fn to_web_push(token: WebPushToken, message: NewMessage)
-    -> Result<(), Status> {
+    -> Result<Status, Status> {
     let api_key = match ConfigGetter::get_vapid_key() {
         Some(api_key) => api_key,
         None => {
@@ -114,21 +109,30 @@ async fn to_web_push(token: WebPushToken, message: NewMessage)
         .build();
     let client: Client<_, Body> = Client::builder().build(https);
 
-    match client.request(web_push).await {
-        Ok(body) => {
-            println!("Response - status: {}", body.status());
-            println!("Response - body: {:#?}", body);
-            Ok(())
+    let res = match client.request(web_push).await {
+        Ok(response) => {
+            Ok(response)
         },
         Err(e) => {
             println!("Error: {}", e);
             Err(Status::InternalServerError)
         }
+    };
+
+    match res {
+        Ok(res) => {
+            if !res.status().is_success() {
+                return Err(Status::from_code(res.status().as_u16()).unwrap());
+            } 
+
+            Ok(Status::Ok)
+        },
+        Err(_) => Err(Status::InternalServerError),
     }
 }
 
 async fn to_fcm(token: &str, message: NewMessage)
-    -> Result<(), Status> {
+    -> Result<Status, Status> {
     let api_key = match ConfigGetter::get_fcm_api_key() {
         Some(api_key) => api_key,
         None => {
