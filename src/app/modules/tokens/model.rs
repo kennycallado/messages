@@ -13,6 +13,7 @@ pub struct Token {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Insertable, AsChangeset)]
 #[diesel(table_name = tokens)]
+#[diesel(treat_none_as_null = true)]
 #[serde(crate = "rocket::serde")]
 pub struct NewToken {
     pub user_id: i32,
