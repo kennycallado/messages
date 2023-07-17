@@ -97,26 +97,15 @@ async fn to_web_push(token: WebPushToken, message: NewMessage)
         Auth::clone_from_slice(&Base64UrlUnpadded::decode_vec(&token.auth).unwrap()),
     ).with_vapid(&key_pair, "mailto:kennycallado@hotmail.com");
 
-    let message = rocket::serde::json::Value::from("{
-        \"notification\": {
-            \"title\": \"Hello\",
-            \"body\": \"World\",
-            \"icon\": \"assets/icons/icon-72x72.png\",
-            \"vibrate\": [100, 50, 100],
-            \"data\": {
-                \"dateOfArrival\": 12345678,
-                \"primaryKey\": 1, 
-                \"type\": \"info\",
-                \"content\": [\"content\"]
-                },
-            \"actions\": [{
-                \"action\": \"explore\",
-                \"title\": \"Explore this new world\"
-            }]
-        } }");
+    // Esto no estaba funcionando
+    // let message = rocket::serde::json::Value::from(r#"{ "notification": { "title": "Hello", "body": "World", "icon": "assets/icons/icon-72x72.png", "vibrate": [100, 50, 100], "data": { "primaryKey": 1, "type": "info", "content": ["content"] }, "actions": [{ "action": "explore", "title": "Explore this new world" }] } }"#);
+    // println!("message: {:#?}", message);
 
-    // let web_push = builder.build(message.to_string()).unwrap().map(|body| body.into());
+    let message: rocket::serde::json::Value = message.into();
     let web_push = builder.build(message.to_string()).unwrap().map(|body| body.into());
+    
+    // let blah = r#"{ "notification": { "title": "Hello", "body": "World", "icon": "assets/icons/icon-72x72.png", "vibrate": [100, 50, 100], "data": { "primaryKey": 1, "type": "info", "content": ["content"] }, "actions": [{ "action": "explore", "title": "Explore this new world" }] } }"#;
+    // let web_push = builder.build(blah).unwrap().map(|body| body.into());
 
     let https = HttpsConnectorBuilder::new()
         .with_native_roots()
