@@ -50,3 +50,14 @@ pub async fn update(db: &Db, id: i32, token: NewToken) -> Result<Token, diesel::
 
     Ok(token)
 }
+
+pub async fn update_by_user_id(db: &Db, user_id: i32, token: NewToken) -> Result<Token, diesel::result::Error> {
+    let token = db
+        .run(move |conn| {
+            diesel::update(tokens::table.filter(tokens::user_id.eq(user_id)))
+                .set(&token)
+                .get_result::<Token>(conn)
+        }).await?;
+
+    Ok(token)
+}

@@ -18,6 +18,8 @@ pub fn routes() -> Vec<rocket::Route> {
         post_create_none,
         put_update,
         put_update_none,
+        put_update_user,
+        put_update_user_none,
     ]
 }
 
@@ -91,5 +93,23 @@ pub async fn put_update(db: Db, claims: AccessClaims, id: i32, new_token: Json<N
 
 #[put("/<_id>", rank = 102)]
 pub fn put_update_none(_id: i32) -> Status {
+    Status::Unauthorized
+}
+
+#[put("/user/<id>", data = "<new_token>", rank = 101)]
+pub async fn put_update_user(db: Db, claims: AccessClaims, id: i32, new_token: Json<NewToken>) -> Result<Json<Token>, Status> {
+    match claims.0.user.role.name.as_str() {
+        "admin" => update::put_update_by_user(&db, claims.0.user, id, new_token.into_inner()).await,
+        "robot" => update::put_update_by_user(&db, claims.0.user, id, new_token.into_inner()).await,
+        "user"  => update::put_update_by_user(&db, claims.0.user, id, new_token.into_inner()).await,
+        _ => {
+            println!("Error: put_update; Role not handled {}", claims.0.user.role.name);
+            Err(Status::Unauthorized)
+        },
+    }
+}
+
+#[put("/user/<_id>", rank = 102)]
+pub fn put_update_user_none(_id: i32) -> Status {
     Status::Unauthorized
 }

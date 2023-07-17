@@ -28,3 +28,16 @@ pub async fn put_update_user(db: &Db, user: UserInClaims, id: i32, new_token: Ne
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+pub async fn put_update_by_user(db: &Db, user: UserInClaims, id: i32, new_token: NewToken) -> Result<Json<Token>, Status> {
+    let token = if user.id != new_token.user_id {
+        return Err(Status::Unauthorized);
+    } else {
+        tokens_repository::update_by_user_id(db, id, new_token).await
+    };
+
+    match token {
+        Ok(token) => Ok(Json(token)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}

@@ -112,7 +112,8 @@ Content-type: application/json
   }
 }
 
-PUT http://localhost:8000/api/v1/messaging/token/1
+# WARNING: port 9000
+PUT http://localhost:9000/api/v1/messaging/token/1
 Accept: application/json
 Authorization: Bearer 
 Content-type: application/json
@@ -120,21 +121,27 @@ Content-type: application/json
 {
   "user_id": 1,
   "fcm_token": null,
-  "web_token": {
-    "endpoint": "",
-    "expirationTime": null,
-    "keys": {
-      "auth": "",
-      "p256dh": ""
-    }
-  }
+  "web_token": null
+}
+
+# WARNING: port 9000
+PUT http://localhost:9000/api/v1/messaging/token/user/1
+Accept: application/json
+Authorization: Bearer 
+Content-type: application/json
+
+{
+  "user_id": 1,
+  "fcm_token": null,
+  "web_token": null
 }
 
 # }}}
 
 # {{{ dispatcher
 
-GET http://localhost:8000/api/v1/messaging/dispatcher/1/user/1
+# WARNING: port 9000
+GET http://localhost:9000/api/v1/messaging/dispatcher/1/user/1
 Accept: application/json
 Authorization: Bearer 
 Content-type: application/json
