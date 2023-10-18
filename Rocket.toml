@@ -5,7 +5,7 @@
 ident      = "questions_api-messages"
 port       = 8000
 # address    = "0.0.0.0"
-origin_url = "http://localhost:8000"
+origin_url = "http://localhost:8000,http://localhost:8080"
 # secret_key = ""
 
 # fcm_api_key= ""
