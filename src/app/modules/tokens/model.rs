@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use crate::database::schema::tokens;
+#[cfg(feature = "db_sqlx")]
+use rocket_db_pools::sqlx::FromRow;
 
-#[derive(Debug, Clone, Deserialize, Serialize, Queryable, Identifiable)]
+#[cfg_attr(feature = "db_sqlx", derive(FromRow))]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Token {
     pub id: i32,
@@ -11,9 +13,7 @@ pub struct Token {
     pub web_token: Option<rocket::serde::json::Value>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Insertable, AsChangeset)]
-#[diesel(table_name = tokens)]
-#[diesel(treat_none_as_null = true)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct NewToken {
     pub user_id: i32,
