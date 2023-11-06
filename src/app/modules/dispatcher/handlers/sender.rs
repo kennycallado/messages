@@ -19,9 +19,12 @@ use crate::app::modules::tokens::model::WebPushToken;
 use crate::app::modules::messages::services::repository as message_repository;
 use crate::app::modules::tokens::services::repository as token_repository;
 
-pub async fn send_message_id(db: &Db, _user: UserInClaims, user_id: i32, message_id: i32)
-    -> Result<Status, Status> {
-
+pub async fn send_message_id(
+    db: &Db,
+    _user: UserInClaims,
+    user_id: i32,
+    message_id: i32,
+) -> Result<Status, Status> {
     // get the message
     let message = match message_repository::get_by_id(db, message_id).await {
         Ok(message) => message,
@@ -45,7 +48,10 @@ pub async fn send_message_id(db: &Db, _user: UserInClaims, user_id: i32, message
         (Some(token), None) => to_fcm(token, message.into()).await,
         (Some(_), Some(_)) => {
             // TODO: send to both ??
-            println!("Error: sender; There is both fcm and web token for user {}", user_id);
+            println!(
+                "Error: sender; There is both fcm and web token for user {}",
+                user_id
+            );
             return Err(Status::InternalServerError);
         }
         (None, None) => {
@@ -55,8 +61,12 @@ pub async fn send_message_id(db: &Db, _user: UserInClaims, user_id: i32, message
     }
 }
 
-pub async fn send_message(db: &Db, _user: UserInClaims, user_id: i32, message: NewMessage)
-    -> Result<Status, Status> {
+pub async fn send_message(
+    db: &Db,
+    _user: UserInClaims,
+    user_id: i32,
+    message: NewMessage,
+) -> Result<Status, Status> {
     // get the token
     // determine if fcm or web push
     // send the message
@@ -65,8 +75,7 @@ pub async fn send_message(db: &Db, _user: UserInClaims, user_id: i32, message: N
     unimplemented!()
 }
 
-async fn to_web_push(token: WebPushToken, message: NewMessage)
-    -> Result<Status, Status> {
+async fn to_web_push(token: WebPushToken, message: NewMessage) -> Result<Status, Status> {
     let api_key = match ConfigGetter::get_vapid_key() {
         Some(api_key) => api_key,
         None => {
@@ -79,7 +88,9 @@ async fn to_web_push(token: WebPushToken, message: NewMessage)
     // let message: rocket::serde::json::Value = message.into();
     // println!("message: {}", message);
 
-    let key_pair = ES256KeyPair::from_bytes(&Base64UrlUnpadded::decode_vec(api_key.as_str()).unwrap()).unwrap();
+    let key_pair =
+        ES256KeyPair::from_bytes(&Base64UrlUnpadded::decode_vec(api_key.as_str()).unwrap())
+            .unwrap();
     // let builder = WebPushBuilder::new(
     //     token.endpoint.parse().unwrap(),
     //     PublicKey::from_sec1_bytes(&Base64UrlUnpadded::decode_vec(&token.p256dh).unwrap()).unwrap(),
@@ -88,17 +99,22 @@ async fn to_web_push(token: WebPushToken, message: NewMessage)
     //
     let builder = WebPushBuilder::new(
         token.endpoint.parse().unwrap(),
-        PublicKey::from_sec1_bytes(&Base64UrlUnpadded::decode_vec(&token.p256dh).unwrap()).unwrap(),
+        PublicKey::from_sec1_bytes(&Base64UrlUnpadded::decode_vec(&token.p256dh).unwrap())
+            .unwrap(),
         Auth::clone_from_slice(&Base64UrlUnpadded::decode_vec(&token.auth).unwrap()),
-    ).with_vapid(&key_pair, "mailto:kennycallado@hotmail.com");
+    )
+    .with_vapid(&key_pair, "mailto:kennycallado@hotmail.com");
 
     // Esto no estaba funcionando
     // let message = rocket::serde::json::Value::from(r#"{ "notification": { "title": "Hello", "body": "World", "icon": "assets/icons/icon-72x72.png", "vibrate": [100, 50, 100], "data": { "primaryKey": 1, "type": "info", "content": ["content"] }, "actions": [{ "action": "explore", "title": "Explore this new world" }] } }"#);
     // println!("message: {:#?}", message);
 
     let message: rocket::serde::json::Value = message.into();
-    let web_push = builder.build(message.to_string()).unwrap().map(|body| body.into());
-    
+    let web_push = builder
+        .build(message.to_string())
+        .unwrap()
+        .map(|body| body.into());
+
     // let blah = r#"{ "notification": { "title": "Hello", "body": "World", "icon": "assets/icons/icon-72x72.png", "vibrate": [100, 50, 100], "data": { "primaryKey": 1, "type": "info", "content": ["content"] }, "actions": [{ "action": "explore", "title": "Explore this new world" }] } }"#;
     // let web_push = builder.build(blah).unwrap().map(|body| body.into());
 
@@ -110,9 +126,7 @@ async fn to_web_push(token: WebPushToken, message: NewMessage)
     let client: Client<_, Body> = Client::builder().build(https);
 
     let res = match client.request(web_push).await {
-        Ok(response) => {
-            Ok(response)
-        },
+        Ok(response) => Ok(response),
         Err(e) => {
             println!("Error: {}", e);
             Err(Status::InternalServerError)
@@ -123,16 +137,15 @@ async fn to_web_push(token: WebPushToken, message: NewMessage)
         Ok(res) => {
             if !res.status().is_success() {
                 return Err(Status::from_code(res.status().as_u16()).unwrap());
-            } 
+            }
 
             Ok(Status::Ok)
-        },
+        }
         Err(_) => Err(Status::InternalServerError),
     }
 }
 
-async fn to_fcm(token: &str, message: NewMessage)
-    -> Result<Status, Status> {
+async fn to_fcm(token: &str, message: NewMessage) -> Result<Status, Status> {
     let api_key = match ConfigGetter::get_fcm_api_key() {
         Some(api_key) => api_key,
         None => {

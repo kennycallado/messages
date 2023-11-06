@@ -22,8 +22,8 @@ pub struct NewToken {
 }
 
 impl From<Token> for NewToken {
-    fn from(token: Token) -> Self{
-        Self{
+    fn from(token: Token) -> Self {
+        Self {
             user_id: token.user_id,
             fcm_token: token.fcm_token,
             web_token: token.web_token,

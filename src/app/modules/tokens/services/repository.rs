@@ -1,7 +1,7 @@
 #[cfg(feature = "db_sqlx")]
 use rocket_db_pools::sqlx;
 
-use crate::app::modules::tokens::model::{Token, NewToken};
+use crate::app::modules::tokens::model::{NewToken, Token};
 use crate::database::connection::Db;
 
 pub async fn get_all(db: &Db) -> Result<Vec<Token>, sqlx::Error> {
@@ -44,10 +44,15 @@ pub async fn create(db: &Db, new_token: NewToken) -> Result<Token, sqlx::Error> 
     //             .values(&new_token)
     //             .get_result::<Token>(conn)
     //     }).await?;
-    let token = sqlx::query_as!(Token, "INSERT INTO tokens (user_id, fcm_token, web_token) VALUES ($1, $2, $3) RETURNING *", new_token.user_id, new_token.fcm_token, new_token.web_token)
-        .fetch_one(&db.0)
-        .await?;
-
+    let token = sqlx::query_as!(
+        Token,
+        "INSERT INTO tokens (user_id, fcm_token, web_token) VALUES ($1, $2, $3) RETURNING *",
+        new_token.user_id,
+        new_token.fcm_token,
+        new_token.web_token
+    )
+    .fetch_one(&db.0)
+    .await?;
 
     Ok(token)
 }
@@ -66,7 +71,11 @@ pub async fn update(db: &Db, id: i32, token: NewToken) -> Result<Token, sqlx::Er
     Ok(token)
 }
 
-pub async fn update_by_user_id(db: &Db, user_id: i32, token: NewToken) -> Result<Token, sqlx::Error> {
+pub async fn update_by_user_id(
+    db: &Db,
+    user_id: i32,
+    token: NewToken,
+) -> Result<Token, sqlx::Error> {
     // let token = db
     //     .run(move |conn| {
     //         diesel::update(tokens::table.filter(tokens::user_id.eq(user_id)))

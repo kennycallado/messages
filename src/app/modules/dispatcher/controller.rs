@@ -8,8 +8,8 @@ use crate::database::connection::Db;
 use crate::app::modules::messages::model::NewMessage;
 use crate::app::modules::tokens::model::Token;
 
-use crate::app::modules::dispatcher::services::config_getter::ConfigGetter;
 use crate::app::modules::dispatcher::handlers::sender;
+use crate::app::modules::dispatcher::services::config_getter::ConfigGetter;
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![
@@ -27,32 +27,47 @@ pub fn options_all() -> Status {
 }
 
 #[get("/<message_id>/user/<user_id>", rank = 101)]
-pub async fn get_send_id(db: &Db, claims: AccessClaims, user_id: i32, message_id: i32)
-    -> Result<Status, Status> {
+pub async fn get_send_id(
+    db: &Db,
+    claims: AccessClaims,
+    user_id: i32,
+    message_id: i32,
+) -> Result<Status, Status> {
     match claims.0.user.role.name.as_str() {
-        "admin" |
-        "robot" => sender::send_message_id(db, claims.0.user, user_id, message_id).await,
+        "admin" | "robot" => {
+            sender::send_message_id(db, claims.0.user, user_id, message_id).await
+        }
         _ => {
-            println!("Error: send_message_id; Role not handled {}", claims.0.user.role.name);
+            println!(
+                "Error: send_message_id; Role not handled {}",
+                claims.0.user.role.name
+            );
             Err(Status::Unauthorized)
         }
     }
-} 
+}
 
 #[get("/<_message_id>/user/<_user_id>", rank = 102)]
 pub fn get_send_none(_message_id: i32, _user_id: i32) -> Status {
     Status::Unauthorized
 }
 
-
 #[post("/user/<user_id>", data = "<message>")]
-pub async fn post_send_message(db: &Db, claims: AccessClaims, user_id: i32, message: Json<NewMessage>)
-    -> Result<Status, Status> {
+pub async fn post_send_message(
+    db: &Db,
+    claims: AccessClaims,
+    user_id: i32,
+    message: Json<NewMessage>,
+) -> Result<Status, Status> {
     match claims.0.user.role.name.as_str() {
-        "admin" |
-        "robot" => sender::send_message(db, claims.0.user, user_id, message.into_inner()).await,
+        "admin" | "robot" => {
+            sender::send_message(db, claims.0.user, user_id, message.into_inner()).await
+        }
         _ => {
-            println!("Error: send_message; Role not handled {}", claims.0.user.role.name);
+            println!(
+                "Error: send_message; Role not handled {}",
+                claims.0.user.role.name
+            );
             Err(Status::Unauthorized)
         }
     }

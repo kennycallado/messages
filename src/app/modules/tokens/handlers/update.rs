@@ -4,10 +4,15 @@ use rocket::serde::json::Json;
 use crate::app::providers::services::claims::UserInClaims;
 use crate::database::connection::Db;
 
-use crate::app::modules::tokens::model::{Token, NewToken};
+use crate::app::modules::tokens::model::{NewToken, Token};
 use crate::app::modules::tokens::services::repository as tokens_repository;
 
-pub async fn put_update_admin(db: &Db, _user: UserInClaims, id: i32, new_token: NewToken) -> Result<Json<Token>, Status> {
+pub async fn put_update_admin(
+    db: &Db,
+    _user: UserInClaims,
+    id: i32,
+    new_token: NewToken,
+) -> Result<Json<Token>, Status> {
     let token = tokens_repository::update(db, id, new_token).await;
 
     match token {
@@ -16,8 +21,13 @@ pub async fn put_update_admin(db: &Db, _user: UserInClaims, id: i32, new_token: 
     }
 }
 
-pub async fn put_update_user(db: &Db, user: UserInClaims, id: i32, new_token: NewToken) -> Result<Json<Token>, Status> {
-    if  user.role.name == "user".to_owned() && user.id != new_token.user_id {
+pub async fn put_update_user(
+    db: &Db,
+    user: UserInClaims,
+    id: i32,
+    new_token: NewToken,
+) -> Result<Json<Token>, Status> {
+    if user.role.name == "user".to_owned() && user.id != new_token.user_id {
         return Err(Status::Unauthorized);
     }
 
@@ -29,11 +39,16 @@ pub async fn put_update_user(db: &Db, user: UserInClaims, id: i32, new_token: Ne
     }
 }
 
-pub async fn put_update_by_user(db: &Db, user: UserInClaims, id: i32, new_token: NewToken) -> Result<Json<Token>, Status> {
-    if  user.role.name == "user".to_owned() && user.id != new_token.user_id {
+pub async fn put_update_by_user(
+    db: &Db,
+    user: UserInClaims,
+    id: i32,
+    new_token: NewToken,
+) -> Result<Json<Token>, Status> {
+    if user.role.name == "user".to_owned() && user.id != new_token.user_id {
         return Err(Status::Unauthorized);
     }
-    
+
     let token = tokens_repository::update_by_user_id(db, id, new_token).await;
 
     match token {

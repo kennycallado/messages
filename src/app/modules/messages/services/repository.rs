@@ -1,7 +1,7 @@
 #[cfg(feature = "db_sqlx")]
 use rocket_db_pools::sqlx;
 
-use crate::app::modules::messages::model::{NewMessage, Message};
+use crate::app::modules::messages::model::{Message, NewMessage};
 use crate::database::connection::Db;
 
 pub async fn get_all(db: &Db) -> Result<Vec<Message>, sqlx::Error> {
