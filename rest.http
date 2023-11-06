@@ -92,7 +92,6 @@ Content-type: application/json
   "user_id": 3,
   "web_token": { "endpoint": "asldkjflksdjf", "expiration": null }
 } 
-}
 
 PUT http://localhost:8000/api/v1/messaging/token/1
 Accept: application/json
