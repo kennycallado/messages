@@ -1,6 +1,7 @@
-# FROM alpine:latest
+FROM alpine:latest
+# needed for `openssl` and `ca-certificates`
 # FROM busybox:latest
-FROM scratch
+# FROM scratch
 
 # --build-arg PACKAGE_NAME=${package_name}
 ARG PACKAGE_NAME="package-name"
